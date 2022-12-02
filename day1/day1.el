@@ -38,14 +38,14 @@
      (point-max))))
 
 (defun parse-supplies (supplies)
-  "Convert SUPPLIES from a list of strings to a list of lists"
+  "Convert SUPPLIES from a list of strings to a list of lists."
   (->> supplies
        (-map (lambda (s)
                (-> s (split-string "\n" t))))))
 
 (defun supplies->calories (supplies)
   "Convert SUPPLIES from a list of lists of strings to a list of
-   list of numbers"
+   list of numbers."
   (-map (lambda (supply-of-elf)
           (-map (lambda (supply)
                   (string-to-number supply))
@@ -54,25 +54,28 @@
 
 (defun calc-total-calories (calorie-list)
   "Given a list of list of numbers, CALORIE-LIST, sum each
-   sub-list"
+   sub-list."
   (-map #'-sum calorie-list))
 
 (defun calories-ledger ()
+  "Read in the calorie ledger data and parse to the actual ledger."
   (-> (util|slurp! "./data")
-      (split-string "\n\n" t)
-      parse-supplies
+      (split-string "\n" t)
       supplies->calories
       calc-total-calories
-      (-zip '(1 2 3 4 5)) ;; not that this relies on each preceding operation being order preserving
+      (lambda (l)
+        (let ((len (length l)))
+          (-zip (number-sequence 1 len)) l)) ;; not that this relies on each preceding operation being order preserving
       (sort #'(lambda (l r) (> (car l)
                           (car r))))))
 
-(defun read-calories (elf calories-ledger)
-  (rassoc elf calories-ledger))
+(defun most-caloric-elf ()
+  "The elf holding the most calories. Its bulking season bby!"
+  (-> (calories-ledger)
+      first
+      cdr))
 
-
-(read-calories 3 (calories-ledger))
-
+(most-caloric-elf)
 
 (provide 'day1)
 ;;; day1.el ends here
