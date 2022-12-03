@@ -59,15 +59,15 @@
 
 (defun calories-ledger ()
   "Read in the calorie ledger data and parse to the actual ledger."
-  (-> (util|slurp! "./data")
-      (split-string "\n" t)
-      supplies->calories
-      calc-total-calories
-      (lambda (l)
-        (let ((len (length l)))
-          (-zip (number-sequence 1 len)) l)) ;; not that this relies on each preceding operation being order preserving
-      (sort #'(lambda (l r) (> (car l)
-                          (car r))))))
+  (--> (util|slurp! "./data")
+       (split-string it "\n\n" t)
+       (parse-supplies it)
+       (supplies->calories it)
+       (calc-total-calories it)
+       (-zip (number-sequence 1 (length it)) it) ;; not that this relies on each preceding operation being order preserving
+       (sort it #'(lambda (l r)
+                    (> (cdr l)
+                       (cdr r))))))
 
 (defun most-caloric-elf ()
   "The elf holding the most calories. Its bulking season bby!"
