@@ -19,23 +19,12 @@
 ;; 2. Name each elf
 ;; 3. Calculate the weight of the food
 ;;
-;; Strategy:
-;; 1. use a heap!
 ;;
 ;; Package-Requires: ((dash "2.19.1"))
 ;;; Code:
 
 (require 'dash)
-
-(defconst day1-data-buffer
-  "*day1-data*" "Local variable to load the problem data in.")
-
-(defun util|slurp! (file)
-  (with-temp-buffer
-    (insert-file-contents file)
-    (buffer-substring-no-properties
-     (point-min)
-     (point-max))))
+(require 'utils)
 
 (defun parse-supplies (supplies)
   "Convert SUPPLIES from a list of strings to a list of lists."
@@ -59,7 +48,7 @@
 
 (defun calories-ledger ()
   "Read in the calorie ledger data and parse to the actual ledger."
-  (--> (util|slurp! "./data")
+  (--> (util|slurp! "./day1/data")
        (split-string it "\n\n" t)
        (parse-supplies it)
        (supplies->calories it)
@@ -76,6 +65,15 @@
       cdr))
 
 (most-caloric-elf)
+
+(defun top-n-elves (n)
+  "Return the top N elves carrying the most calories"
+  (-take n (calories-ledger)))
+
+;; and no sum
+(->> (top-n-elves 3)
+     (map 'list #'cdr)
+     -sum)
 
 (provide 'day1)
 ;;; day1.el ends here
