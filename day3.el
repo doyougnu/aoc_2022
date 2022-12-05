@@ -38,7 +38,7 @@
         (string-to-list "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")))
 
 (defun load-data! (file)
-  (util|slurp! file))
+  (utils|slurp! file))
 
 (defun parse-data (stream)
   (split-string stream "\n" t))
@@ -51,9 +51,9 @@
                 (funcall f line))))
     (list (seq-take line half) (seq-drop line half))))
 
-(defun shared-item (left right)
+(defun shared-item (&rest items)
   "Return the shared items in the left and right compartments"
-  (seq-intersection left right))
+  (-reduce #'seq-intersection items))
 
 (defun item->priority (item)
   (car (rassoc item priority-list)))
@@ -61,6 +61,7 @@
 (defun priority->item (prio)
   (cdr (assoc prio priority-list)))
 
+;; part one
 (-> (load-data! "./day3/data")
     parse-data
     (->>
@@ -68,6 +69,19 @@
      (-map #'(lambda (e)
                (seq-uniq
                 (apply #'shared-item e))))
+     (-mapcat #'(lambda (e)
+                  (-map #'item->priority e)))
+     -sum))
+
+;; part two
+(-> (load-data! "./day3/data")
+    parse-data
+    (->>
+     (-map #'split-by)
+     (-partition 3)
+     (-map #'(lambda (grp)
+               (seq-uniq
+                (apply #'shared-item grp))))
      (-mapcat #'(lambda (e)
                   (-map #'item->priority e)))
      -sum))
