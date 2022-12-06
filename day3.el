@@ -77,14 +77,15 @@
 (-> (load-data! "./day3/data")
     parse-data
     (->>
-     (-map #'split-by)
-     (-partition 3)
-     (-map #'(lambda (grp)
-               (seq-uniq
-                (apply #'shared-item grp))))
-     (-mapcat #'(lambda (e)
-                  (-map #'item->priority e)))
-     -sum))
+     (-partition-all 3)
+     (-map #'(lambda (l)
+                  (-mapcat #'split-by l)))
+
+     (-map #'shared-item)
+     ;; (-mapcat #'(lambda (e)
+     ;;              (-map #'item->priority e)))
+     ;; -sum
+     ))
 
 
 (provide 'day3)
