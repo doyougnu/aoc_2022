@@ -51,9 +51,12 @@
                 (funcall f line))))
     (list (seq-take line half) (seq-drop line half))))
 
-(defun shared-item (&rest items)
+(defun shared-item (items)
   "Return the shared items in the left and right compartments"
-  (-reduce #'seq-intersection items))
+  (pcase items
+    (`(,a ,b ,c) (-> (seq-intersection a c)
+                     (seq-intersection b)))))
+
 
 (defun item->priority (item)
   (car (rassoc item priority-list)))
@@ -74,18 +77,22 @@
      -sum))
 
 ;; part two
-(-> (load-data! "./day3/data")
+(-> ;;(load-data! "./day3/data")
+    "vJrwpWtwJgWrhcsFMMfFFhFp\njqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\nPmmdzqPrVvPwwTWBwg"
     parse-data
     (->>
-     (-partition-all 3)
-     (-map #'(lambda (l)
-                  (-mapcat #'split-by l)))
+     (-partition 3)
+     ;; (-map #'(lambda (l)
+     ;;              (-mapcat #'split-by l)))
 
      (-map #'shared-item)
+     (-map #'seq-uniq)
+     (-map (lambda (e)
+             (-mapcat #'item->priority e)))
+     ;;(-map #'char-to-string)
      ;; (-mapcat #'(lambda (e)
      ;;              (-map #'item->priority e)))
-     ;; -sum
-     ))
+     -sum))
 
 
 (provide 'day3)
