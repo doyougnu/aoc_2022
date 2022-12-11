@@ -37,13 +37,17 @@
 2-6,4-8")
 
 (defun line-parser (line-str)
-  (when (string-match "[[:digit:]]-[[:digit:]],[[:digit:]]-[[:digit:]]" line-str)
-    (list (match-string 0 line-str)
-          (match-string 1 line-str)
-          (match-string 2 line-str)
-          (match-string 3 line-str))))
+  (let ((regex (rx (seq (group (+ num)) "-"
+                        (group (+ num)) ","
+                        (group (+ num)) "-"
+                        (group (+ num))))))
+    (when (string-match regex line-str)
+      (list (match-string 1 line-str)
+            (match-string 2 line-str)
+            (match-string 3 line-str)
+            (match-string 4 line-str)))))
 
-(line-parser "2-3,3-4")
+(line-parser "2345-3,1-4")
 
 
 
