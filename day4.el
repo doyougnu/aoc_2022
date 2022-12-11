@@ -36,9 +36,14 @@
 6-6,4-6
 2-6,4-8")
 
-(defun line-parser (line-str))
+(defun line-parser (line-str)
+  (when (string-match "[[:digit:]]-[[:digit:]],[[:digit:]]-[[:digit:]]" line-str)
+    (list (match-string 0 line-str)
+          (match-string 1 line-str)
+          (match-string 2 line-str)
+          (match-string 3 line-str))))
 
-(line-parser "2-3")
+(line-parser "2-3,3-4")
 
 
 
