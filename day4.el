@@ -80,7 +80,7 @@ iff the left max in greater than or equal to the right max"
   "Does one pair overlap with the range of another pair."
   (let ((left-min (plist-get pairs :minL))
         (left-max (plist-get pairs :maxL))
-        (right-min (plist-get pairs :maxR))
+        (right-min (plist-get pairs :minR))
         (right-max (plist-get pairs :maxR)))
     (not (or (< left-max right-min)
              (> left-min right-max)))))
