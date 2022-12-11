@@ -42,13 +42,56 @@
                         (group (+ num)) "-"
                         (group (+ num))))))
     (when (string-match regex line-str)
-      (list (match-string 1 line-str)
-            (match-string 2 line-str)
-            (match-string 3 line-str)
-            (match-string 4 line-str)))))
+      (list :minL (string-to-number (match-string 1 line-str))
+            :maxL (string-to-number (match-string 2 line-str))
+            :minR (string-to-number (match-string 3 line-str))
+            :maxR (string-to-number (match-string 4 line-str))))))
 
-(line-parser "2345-3,1-4")
+(defun fully-contains (pairs)
+  "Given a pair of pairs, the left pair fully contains the right
+pair iff the left min is less than or equal to the right min and
+iff the left max in greater than or equal to the right max"
+  (or (and (<= (plist-get pairs :minL)
+               (plist-get pairs :minR))
+           (>= (plist-get pairs :maxL)
+               (plist-get pairs :maxR)))
+      (and (<= (plist-get pairs :minR)
+               (plist-get pairs :minL))
+           (>= (plist-get pairs :maxR)
+               (plist-get pairs :maxL)))))
 
+
+;; 1
+(->> (load-data! "./day4/data")
+    parse-data
+    (-map #'line-parser)
+    (-map #'(lambda (e)
+              (if (fully-contains e)
+                  1 0)))
+    -sum)
+
+;; 2
+(defun between (n l r)
+  "Is N, included in the range determined by L and R (inclusive)."
+  (or (<= l n)
+      (>= r n)))
+
+(defun overlap? (pairs)
+  "Does one pair overlap with the range of another pair."
+  (let ((left-min (plist-get pairs :minL))
+        (left-max (plist-get pairs :maxL))
+        (right-min (plist-get pairs :maxR))
+        (right-max (plist-get pairs :maxR)))
+    (not (or (< left-max right-min)
+             (> left-min right-max)))))
+
+(->> (load-data! "./day4/data")
+    parse-data
+    (-map #'line-parser)
+    (-map #'(lambda (e)
+              (if (overlap? e)
+                  1 0)))
+    -sum)
 
 
 (provide 'day4)
