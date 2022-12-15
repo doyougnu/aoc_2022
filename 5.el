@@ -50,29 +50,34 @@
 
 
 (defun pop! (list)
-  (pop list))
+  (let ((ele (pop list)))
+    (cons ele list)))
 
 (defun get-stack (num supply)
   (aref supply (1- num)))
 
-(defun replace-stack! (num supply stack)
-  (aset supply (1- num) stack))
+(defun replace-stack (num supply stack)
+  (aset supply (1- num) stack)
+  supply)
 
 (defun stack (supply crate num)
   (let ((stack (get-stack num supply)))
-    (replace-stack! num
-                    supply
-                    (cons crate stack))))
+    (replace-stack num
+                   supply
+                   (cons crate stack))))
 
 (defun move (supply &key from &key to)
   (let* ((from-stk (get-stack from supply))
          (to-stk   (get-stack to   supply))
-         (crate    (pop! from-stk)))
-    (stack supply crate to)))
-
-(pop! (get-stack 1 start-supply))
+         (new-sup  (pop! from-stk))
+         (crate    (car new-sup))
+         (new-stack (cdr new-sup)))
+    (stack (replace-stack from supply new-stack) crate to)))
 
 (move start-supply :from 2 :to 1)
+
+
+(move :from 2 :to 1)
 
 (message "%s" start-supply)
 
